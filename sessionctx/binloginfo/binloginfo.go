@@ -110,7 +110,7 @@ func (info *BinlogInfo) WriteBinlog(clusterID uint64) error {
 		return errors.New("pumps client is nil")
 	}
 	// test
-	info.Data.XXX_unrecognized = []byte("1.2.3.4")
+	//info.Data.XXX_unrecognized = []byte("1.2.3.4")
 
 	// it will retry in PumpsClient if write binlog fail.
 	err := info.Client.WriteBinlog(info.Data)
