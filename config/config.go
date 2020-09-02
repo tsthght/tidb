@@ -293,6 +293,8 @@ type Binlog struct {
 	BinlogSocket string `toml:"binlog-socket" json:"binlog-socket"`
 	// The strategy for sending binlog to pump, value can be "range" or "hash" now.
 	Strategy string `toml:"strategy" json:"strategy"`
+	// The LocalIP for local ip
+	LocalIP string `toml:"localip" json:"localip"`
 }
 
 // Plugin is the config for plugin

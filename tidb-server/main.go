@@ -215,6 +215,8 @@ func setupBinlogClient() {
 		binloginfo.SetIgnoreError(true)
 	}
 
+	binloginfo.SetLocalIP(cfg.Binlog.LocalIP)
+
 	var (
 		client *pumpcli.PumpsClient
 		err    error

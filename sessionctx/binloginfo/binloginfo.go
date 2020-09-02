@@ -15,7 +15,9 @@ package binloginfo
 
 import (
 	"context"
+	"log"
 	"math"
+	"net"
 	"regexp"
 	"strings"
 	"sync"
@@ -98,6 +100,36 @@ func SetIgnoreError(on bool) {
 	}
 }
 
+var localIp string = ""
+
+// SetLocalIP set the local IP for SQL node
+func SetLocalIP(ip string) {
+	if len(ip) == 0 {
+		i, e := getLocalIp()
+		if e != nil {
+			log.Fatal(e.Error())
+		}
+		localIp = i
+	} else {
+		localIp = ip
+	}
+}
+
+func getLocalIp() (string ,error) {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return "", err
+	}
+	for _, address := range addrs {
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String(), nil
+			}
+		}
+	}
+	return "", errors.New("Can not find the client ip address!")
+}
+
 // WriteBinlog writes a binlog to Pump.
 func (info *BinlogInfo) WriteBinlog(clusterID uint64) error {
 	skip := atomic.LoadUint32(&skipBinlog)
@@ -109,6 +141,8 @@ func (info *BinlogInfo) WriteBinlog(clusterID uint64) error {
 	if info.Client == nil {
 		return errors.New("pumps client is nil")
 	}
+
+	info.Data.Ip = []byte(localIp)
 
 	// it will retry in PumpsClient if write binlog fail.
 	err := info.Client.WriteBinlog(info.Data)
