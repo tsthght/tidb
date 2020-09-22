@@ -144,6 +144,10 @@ func (info *BinlogInfo) WriteBinlog(clusterID uint64) error {
 
 	info.Data.Ip = []byte(localIp)
 
+	if len(info.Data.Ip) == 0 {
+		return errors.New("binlog IP is nil")
+	}
+
 	// it will retry in PumpsClient if write binlog fail.
 	err := info.Client.WriteBinlog(info.Data)
 	if err != nil {
